@@ -10,6 +10,8 @@ export const FF_DEV_1658 = "ff_front_dev_1658_notification_center_170222_short";
 export const FF_DEV_1614 = "ff_back_1614_rejected_queue_17022022_short";
 // Model version selector per model backend
 export const FF_DEV_1682 = "ff_front_dev_1682_model_version_dropdown_070622_short";
+// useQuery with abortable secondary request for projects list performance improvement
+export const FF_DEV_2575 = "ff_front_dev_2575_project_list_query_performance_270622_short";
 
 export function isFF(id) {
   if (id in FEATURE_FLAGS) {
