@@ -28,6 +28,7 @@ from .models import FileUpload
 
 from webhooks.utils import emit_webhooks_for_instance
 from webhooks.models import WebhookAction
+from data_manager.functions import formalize_data
 
 logger = logging.getLogger(__name__)
 
@@ -212,6 +213,9 @@ class ImportAPI(generics.CreateAPIView):
             # turn flat task JSONs {"column1": value, "column2": value} into {"data": {"column1"..}, "predictions": [{..."column2"}]  # noqa
             parsed_data = self._reformat_predictions(parsed_data, preannotated_from_fields)
 
+        for i in range(len(parsed_data)):
+            parsed_data[i]['data'], parsed_data[i]['annotations'] = formalize_data(parsed_data[i]['data'])
+
         if commit_to_project:
             # Immediately create project tasks and update project states and counters
             tasks, serializer = self._save(parsed_data)
@@ -317,6 +321,9 @@ class ReImportAPI(ImportAPI):
         tasks, found_formats, data_columns = FileUpload.load_tasks_from_uploaded_files(
             project, file_upload_ids,  files_as_tasks_list=files_as_tasks_list)
 
+        for i in range(len(tasks)):
+            tasks[i]['data'], tasks[i]['annotations'] = formalize_data(tasks[i]['data'])
+        
         with transaction.atomic():
             project.remove_tasks_by_file_uploads(file_upload_ids)
             tasks, serializer = self._save(tasks)

@@ -13,6 +13,7 @@ from data_manager.models import View
 from tasks.models import Task
 from urllib.parse import unquote
 from core.feature_flags import flag_set
+import requests
 
 TASKS = 'tasks:'
 logger = logging.getLogger(__name__)
@@ -326,7 +327,6 @@ def evaluate_predictions(tasks):
         return
 
     project = tasks[0].project
-
     for ml_backend in project.ml_backends.all():
         # tasks = tasks.filter(~Q(predictions__model_version=ml_backend.model_version))
         ml_backend.predict_tasks(tasks)
@@ -355,3 +355,64 @@ def preprocess_field_name(raw_field_name, only_undefined_field=False):
         else:
             field_name = field_name.replace("data.", "data__")
     return field_name, ascending
+
+
+def formalize_data(data):
+    # is string?
+    if isinstance(data, str):
+        print("is string")
+        data = json.loads(data)
+    spans = {}
+    for span in data['spans']:
+        if span['token_start'] not in spans:
+            spans[span['token_start']] = [span['label']]
+        else:
+            spans[span['token_start']].append(span['label'])
+
+    labels, annotation, memo = [], [], {}
+    for i in range(len(data['tokens'])):
+        if data['tokens'][i]['id'] not in spans:
+            continue
+        if len(spans[data['tokens'][i]['id']]) == 1:
+            continue
+        id = data['tokens'][i]['id']
+
+        annotation.append({
+            "id": id,
+            "from_name": "label",
+            "to_name": "text",
+            "type": "labels",
+            "value": {
+                "start": data['tokens'][i]['start'],
+                "end": data['tokens'][i]['end'],
+                "text": data['tokens'][i]['text'],
+                "labels": spans[id],
+            }
+        })
+        for label in spans[id]:
+            if label not in memo:
+                pos, offset = label.split('#')
+                synset = get_one_synset(pos, offset)
+                labels.append({
+                    'value':label, 
+                    'alias': synset[0]['gloss'].split(';')[0] if synset else None,
+                    'showalias': True if synset else False
+                    })
+                memo[label] = True
+
+    data['labels'] = labels
+    annotations = [{
+        "model_version": "one",
+        "result": annotation
+    }]
+    
+    return data, annotations
+
+
+AUTH_HEADERS = { "Authorization": f"Bearer 32361f1d588ef460f53fafa0b5cee75ff1a6204e8435858c541ad046202b48fc"}
+def get_one_synset(pos: str, offset: str):
+    with requests.Session() as session:
+        session.headers.update(AUTH_HEADERS)
+        response = session.get(f"https://wordnet.senseful.ai/api/synsets/{pos}/{offset}/")
+        if response is not None:
+            return response.json()

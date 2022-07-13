@@ -22,7 +22,7 @@ from projects.serializers import ProjectSerializer
 from tasks.models import Task, Annotation, Prediction
 from tasks.serializers import TaskIDOnlySerializer
 
-from data_manager.functions import get_prepared_queryset, evaluate_predictions, get_prepare_params
+from data_manager.functions import get_prepared_queryset, evaluate_predictions, get_prepare_params, formalize_data
 from data_manager.models import View, PrepareParams
 from data_manager.managers import get_fields_for_evaluation
 from data_manager.serializers import ViewSerializer, DataManagerTaskSerializer, SelectedItemsSerializer, ViewResetSerializer

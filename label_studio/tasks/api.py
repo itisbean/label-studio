@@ -19,7 +19,7 @@ from core.utils.common import (
 )
 from core.utils.common import bool_from_request
 from data_manager.api import TaskListAPI as DMTaskListAPI
-from data_manager.functions import evaluate_predictions
+from data_manager.functions import evaluate_predictions, formalize_data
 from data_manager.models import PrepareParams
 from data_manager.serializers import DataManagerTaskSerializer
 from projects.models import Project
@@ -180,6 +180,9 @@ class TaskAPI(generics.RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer_class()(self.task, many=False, context=context)
         data = serializer.data
+
+        # data['data'] = formalize_data(data['data'])
+
         return Response(data)
 
     def get_queryset(self):
