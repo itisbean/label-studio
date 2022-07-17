@@ -1,7 +1,7 @@
 {
     "title": "Label Studio",
     "description": "Description",
-    "host": "134.209.24.131",
+    "host": "https://dev.senseful.ai/",
     "internal_host": "0.0.0.0",
     "port": 8080,
     "debug": false,

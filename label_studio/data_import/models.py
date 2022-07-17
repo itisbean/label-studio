@@ -134,7 +134,7 @@ class FileUpload(models.Model):
                 tasks = self.read_tasks_list_from_tsv()
             elif file_format == '.txt' and file_as_tasks_list:
                 tasks = self.read_tasks_list_from_txt()
-            elif file_format == '.json':
+            elif file_format == '.json' or file_format == '.jsonl':
                 tasks = self.read_tasks_list_from_json()
 
             # otherwise - only one object tag should be presented in label config

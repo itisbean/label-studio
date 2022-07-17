@@ -369,6 +369,10 @@ def formalize_data(data):
         else:
             spans[span['token_start']].append(span['label'])
 
+    text = data['text']
+    start_words = data['tokens'][0]['text']
+    start_pos = data['tokens'][0]['start']
+    start_pos -= text.find(start_words)
     labels, annotation, memo = [], [], {}
     for i in range(len(data['tokens'])):
         if data['tokens'][i]['id'] not in spans:
@@ -383,8 +387,8 @@ def formalize_data(data):
             "to_name": "text",
             "type": "labels",
             "value": {
-                "start": data['tokens'][i]['start'],
-                "end": data['tokens'][i]['end'],
+                "start": data['tokens'][i]['start']-start_pos,
+                "end": data['tokens'][i]['end']-start_pos,
                 "text": data['tokens'][i]['text'],
                 "labels": spans[id],
             }
