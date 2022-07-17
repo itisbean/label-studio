@@ -398,8 +398,8 @@ def formalize_data(data):
                 pos, offset = label.split('#')
                 synset = get_one_synset(pos, offset)
                 labels.append({
-                    'value':label, 
-                    'alias': synset[0]['gloss'].split(';')[0] if synset else None,
+                    'value': synset[0]['gloss'].split(';')[0] if synset else None,
+                    'alias': label, 
                     'showalias': True if synset else False
                     })
                 memo[label] = True

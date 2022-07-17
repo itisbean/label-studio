@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 SILENCED_SYSTEM_CHECKS = []
 
 # Hostname is used for proper path generation to the resources, pages, etc
-HOSTNAME = get_env('HOST', 'https://dev.senseful.ai/')
+HOSTNAME = get_env('HOST', '')
 if HOSTNAME:
     if not HOSTNAME.startswith('http://') and not HOSTNAME.startswith('https://'):
         logger.info(
