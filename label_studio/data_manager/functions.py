@@ -362,11 +362,16 @@ def formalize_data(data):
     if isinstance(data, str):
         print("is string")
         data = json.loads(data)
+
+    if not data['tokens']:
+        data['labels'] = []
+        return data, []
+
     spans = {}
     for span in data['spans']:
         if span['token_start'] not in spans:
             spans[span['token_start']] = [span['label']]
-        else:
+        elif len(spans[span['token_start']]) < 3:
             spans[span['token_start']].append(span['label'])
 
     text = data['text']
